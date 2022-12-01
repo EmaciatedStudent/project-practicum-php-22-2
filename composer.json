@@ -1,0 +1,17 @@
+{
+    "name": "tgu/laperdina",
+    "autoload": {
+        "psr-4": {
+            "Tgu\\Laperdina\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "EmaciatedStudent",
+            "email": "yana.laperdina@gmail.com"
+        }
+    ],
+    "require": {
+        "fakerphp/faker": "^1.20"
+    }
+}

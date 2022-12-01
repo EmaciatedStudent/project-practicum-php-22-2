@@ -1,25 +1,16 @@
 <?php
 
-class User {
-    public $firstname;
-    public $lastname;
-    private $phone;
-    private $email;
+require_once __DIR__ . '/vendor/autload.php';
 
-    public function __construct($firstname, $lastname, $phone, $email) {
-        $this->firstname = $firstname;
-        $this->lastname = $lastname;
-        $this->phone = $phone;
-        $this->email = $email;
-    }
+use Tgu\Laperdina\User\User;
+use Tgu\Laperdina\Comment\Comment;
+use Tgu\Laperdina\Article\Article;
 
-    public function changePassword() {
-        return;
-    }
-}
+spl_autoload_register(function ($class) {
+    $file = str_replace('\\', DIRECTORY_SEPARATOR, $class);
+    $file = str_replace('Class_', 'Class' . DIRECTORY_SEPARATOR, $file) . '.php';
 
-class Admin extends User {
-    public function blockUser() {
-        return;
+    if (file_exists($file)) {
+        require $file;
     }
-}
+});
