@@ -11,3 +11,7 @@ Content-Type: application/json
   "id_post": "edb10650-3b52-4a8e-b05c-c5a1f167bed0",
   "text":"qwerty"
 }
+
+###
+GET http://127.0.0.1:8000/users/show?username=admin
+Accept: application/json
