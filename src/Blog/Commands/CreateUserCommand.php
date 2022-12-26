@@ -13,10 +13,12 @@ use Psr\Log\LoggerInterface;
 class CreateUserCommand
 {
     private UsersRepositoryInterface $usersRepository;
+    private LoggerInterface $logger;
 
-    public function __construct($usersRepository)
+    public function __construct($usersRepository, $logger)
     {
         $this->usersRepository = $usersRepository;
+        $this->logger = $logger;
     }
 
     public function handle(Arguments $arguments):void{
@@ -27,11 +29,17 @@ class CreateUserCommand
             $this->logger->warning("User already exists: $username");
         }
 
-        $this->usersRepository->save(new User(
-            UUID::random(),
-            new Name($arguments->get('first_name'), $arguments->get('last_name')),
-            $username
-        ));
+        $user = User::createFrom(
+            $username,
+            $arguments->get('password'),
+            new Name(
+                $arguments->get('first_name'),
+                $arguments->get('last_name')
+            )
+        );
+        $this->usersRepository->save($user);
+
+        $this->logger->info("User created: " . $user->getUuid());
     }
 
     public function userExist(string $username):bool{

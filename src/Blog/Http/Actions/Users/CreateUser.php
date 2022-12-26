@@ -9,8 +9,8 @@ use Tgu\Laperdina\Blog\Http\Response;
 use Tgu\Laperdina\Blog\Http\SuccessResponse;
 use Tgu\Laperdina\Blog\Repositories\UserRepository\UsersRepositoryInterface;
 use Tgu\Laperdina\Blog\User;
-use Tgu\Laperdina\Blog\UUID;
 use Tgu\Laperdina\Exceptions\HttpException;
+use Tgu\Laperdina\Person\Name;
 
 class CreateUser implements ActionInterface
 {
@@ -23,16 +23,19 @@ class CreateUser implements ActionInterface
 
     public function handle(Request $request): Response {
         try {
-            $newUserUuid = UUID::random();
-            $user = new User($newUserUuid,new Name($request->jsonBodyFind('first_name'), $request->jsonBodyFind('last_name')), $request->jsonBodyFind('username'));
+            $user= User::createFrom(
+                $request->jsonBodyField('username'),
+                $request->jsonBodyField('password'),
+                new Name(
+                    $request->jsonBodyField('first_name'),
+                    $request->jsonBodyField('last_name')
+                ));
         }
-
         catch (HttpException $exception) {
             return new ErrorResponse($exception->getMessage());
         }
-
         $this->usersRepository->save($user);
-        return new SuccessResponse(['uuid'=>(string)$newUserUuid]);
+        return new SuccessResponse(['uuid' => (string)$user->getUuid()]);
     }
 
 }

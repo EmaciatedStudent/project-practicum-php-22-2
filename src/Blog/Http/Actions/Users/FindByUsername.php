@@ -10,6 +10,7 @@ use Tgu\Laperdina\Blog\Http\SuccessResponse;
 use Tgu\Laperdina\Blog\Repositories\UserRepository\UsersRepositoryInterface;
 use Tgu\Laperdina\Exceptions\HttpException;
 use Tgu\Laperdina\Exceptions\UserNotFoundException;
+use Tgu\Laperdina\Blog\Http\Auth\AuthenticationInterface;
 
 class FindByUsername implements ActionInterface
 {
@@ -31,5 +32,13 @@ class FindByUsername implements ActionInterface
 
         return new SuccessResponse(['username'=>$user->getUserName(),
             'name'=>$user->getName()->getFirstName().' '.$user->getName()->getLastName()]);
+    }
+
+    public function user(Request $request): User {
+
+    }
+
+    public function post(Request $request): Post {
+
     }
 }

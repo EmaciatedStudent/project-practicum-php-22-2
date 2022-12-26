@@ -11,29 +11,42 @@ use Tgu\Laperdina\Blog\Post;
 use Tgu\Laperdina\Blog\Repositories\PostRepository\PostsRepositoryInterface;
 use Tgu\Laperdina\Blog\UUID;
 use Tgu\Laperdina\Exceptions\HttpException;
+use Tgu\Laperdina\Exceptions\UserNotFoundException;
+use Tgu\Laperdina\Blog\Http\Auth\TokenAuthenticationInterface;
 
 class CreatePost implements ActionInterface {
     private PostsRepositoryInterface $postsRepository;
+    private TokenAuthenticationInterface $authentication;
 
-    public function __construct ($postsRepository)
+    public function __construct ($postsRepository, $authentication)
     {
         $this->postsRepository = $postsRepository;
+        $this->authentication = $authentication;
     }
 
     public function handle(Request $request): Response {
         try {
-            $newPostUuid = UUID::random();
-            $post = new Post($newPostUuid,
-                $request->jsonBodyFind('uuid_author'),
-                $request->jsonBodyFind('title'),
-                $request->jsonBodyFind('text'));
+            $id_author = $this->authentication->user($request);
+        }
+        catch (UserNotFoundException $exception) {
+            return new ErrorResponse($exception->getMessage());
         }
 
+        $postId = UUID::random();
+        try {
+            $post = new Post(
+                $postId,
+                $id_author,
+                $request->jsonBodyField('title'),
+                $request->jsonBodyField('text')
+            );
+        }
         catch (HttpException $exception){
             return new ErrorResponse($exception->getMessage());
         }
 
         $this->postsRepository->savePost($post);
-        return new SuccessResponse(['uuid_post'=>$newPostUuid]);
+        return new SuccessResponse(['uuid_post'=>(string)$postId]);
+
     }
 }

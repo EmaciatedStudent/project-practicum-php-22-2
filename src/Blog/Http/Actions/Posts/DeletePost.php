@@ -10,6 +10,7 @@ use Tgu\Laperdina\Blog\Http\SuccessResponse;
 use Tgu\Laperdina\Blog\Repositories\PostRepositories\PostsRepositoryInterface;
 use Tgu\Laperdina\Exceptions\HttpException;
 use Tgu\Laperdina\Exceptions\PostNotFoundException;
+use Tgu\Laperdina\Blog\Http\Auth\AuthenticationInterface;
 
 class DeletePost implements ActionInterface
 {

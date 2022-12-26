@@ -14,12 +14,15 @@ class InMemoryPostRepository implements PostsRepositoryInterface {
     }
 
     public function getByUuidPost(UUID $uuidPost): Post {
-        foreach ($this->posts as $post){
-            if((string)$post->getUuid() === $uuidPost) {
+        foreach ($this->posts as $post) {
+            if((string)$post->getUuid() === $uuidPost)
                 return $post;
-            }
         }
 
-        throw new PostNotFoundException("Post not found $uuidPost");
+        throw new PostNotFoundException("Posts not found $uuidPost");
+    }
+
+    public function getTextPost(string $text): Post {
+
     }
 }

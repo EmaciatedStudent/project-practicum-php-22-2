@@ -10,6 +10,7 @@ use Tgu\Laperdina\Blog\Repositories\CommentsRepository\SqliteCommentsRepository;
 use Tgu\Laperdina\Exceptions\HttpException;
 use Dotenv\Dotenv;
 use Psr\Log\LoggerInterface;
+use Tgu\Laperdina\Blog\Http\Actions\Auth\Login;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
@@ -38,20 +39,24 @@ catch (HttpException $exception) {
 }
 
 $routes =[
-    'GET'=>['/users/show' => FindByUsername::class],
-    'POST'=>['/users/create' => CreateUser::class]
+    'GET'=>['/users/show'=>FindByUsername::class],
+    'POST'=>[
+        '/login'=> Login::class,
+        '/users/create'=>CreateUser::class,
+        '/posts/create'=> CreatePost::class,
+        '/comment/create'=> CreateComment::class,
+        '/like/create'=> CreateLikes::class]
 ];
 
-
 if (!array_key_exists($path,$routes[$method])) {
-    $logger->warning("Route not found: $path $method");
-    (new ErrorResponse('Not found'))->send();
+    $message = "Route not found: $path $method";
+    $logger->warning($message);
+    (new ErrorResponse($message))->send();
     return;
 }
 
-$actionClassName  = $routes[$method][$path];
+$actionClassName = $routes[$method][$path];
 $action = $conteiner->get($actionClassName);
-
 try {
     $response = $action->handle($request);
     $response->send();

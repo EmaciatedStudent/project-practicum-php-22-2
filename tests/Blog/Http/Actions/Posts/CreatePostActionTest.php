@@ -27,6 +27,10 @@ class CreatePostActionTest extends TestCase {
             public function getByUuidPost(UUID $uuid): Post {
                 throw new PostNotFoundException('Post not found');
             }
+
+            public function getTextPost(string $text): Post {
+
+            }
         };
     }
 
