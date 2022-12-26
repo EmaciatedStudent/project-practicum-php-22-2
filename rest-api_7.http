@@ -1,0 +1,13 @@
+GET http://127.0.0.1:8000/users/show?username=user1
+Some-Header: some value
+Content-Type: application/json
+###
+POST http://127.0.0.1:8000/posts/comment
+Accept: application/json
+Content-Type: application/json
+
+{
+  "id_author":"f76cfc25-f8b2-4d15-9775-944db6648a82",
+  "id_post": "edb10650-3b52-4a8e-b05c-c5a1f167bed0",
+  "text":"qwerty"
+}
