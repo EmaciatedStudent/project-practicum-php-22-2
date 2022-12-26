@@ -11,6 +11,7 @@ use Tgu\Laperdina\Blog\UUID;
 use Tgu\Laperdina\Exceptions\InvalidArgumentExceptions;
 use Tgu\Laperdina\Exceptions\UserNotFoundException;
 use Tgu\Laperdina\Person\Name;
+use Tgu\Laperdina\PhpUnit\Blog\DummyLogger;
 
 class SqliteUsersRepositoryTest extends TestCase {
     public function testItTrowsAnExceptionWhenUserNotFound(): void {
@@ -42,7 +43,7 @@ class SqliteUsersRepositoryTest extends TestCase {
             ]);
         $connectionStub->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqliteUsersRepository($connectionStub);
+        $repository = new SqliteUsersRepository($connectionStub, new DummyLogger());
 
         $repository->save(new User(
             new UUID('cd6a4d34-3d65-44a5-bb52-90a0ce3efcb3'),
@@ -61,7 +62,7 @@ class SqliteUsersRepositoryTest extends TestCase {
         $statementStub->method('fetch')->willReturn(false);
         $connectionStub->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqliteUsersRepository($connectionStub);
+        $repository = new SqliteUsersRepository($connectionStub, new DummyLogger());
         $this->expectException(UserNotFoundException::class);
         $this->expectExceptionMessage(' UUID: cd6a4d34-3d65-44a5-bb52-90a0ce3efcb3');
 

@@ -10,17 +10,19 @@ use Tgu\Laperdina\Blog\Commands\Arguments;
 use Tgu\Laperdina\Blog\Commands\CreateUserCommand;
 use Tgu\Laperdina\Exceptions\Argumentsexception;
 use Tgu\Laperdina\Exceptions\CommandException;
+use Psr\Log\LoggerInterface;
 
 require_once __DIR__ . 'vendor/autoload.php';
-
 $conteiner = require __DIR__ .'/bootstrap.php';
+
 $command = $conteiner->get(CreateUserCommand::class);
+$logger= $conteiner-> get(LoggerInterface::class);
 
 try {
     $command->handle(Arguments::fromArgv($argv));
 }
 catch (Argumentsexception|CommandException $exception) {
-    echo $exception->getMessage();
+    $logger->error($exception->getMessage(), ['exceptoin' => $exception]);
 }
 
 //$connection = new PDO('sqlite:' . __DIR__ . '/blog.sqlite');

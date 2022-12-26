@@ -7,15 +7,19 @@ use PDOStatement;
 use Tgu\Laperdina\Blog\Comment;
 use Tgu\Laperdina\Blog\UUID;
 use Tgu\Laperdina\Exceptions\CommentNotFoundException;
+use Psr\Log\LoggerInterface;
 
 class SqliteCommentsRepository implements CommentsRepositoryInterface {
     private PDO $connection;
+    private LoggerInterface $logger;
 
-    public function __construct($connection) {
+    public function __construct($connection, $logger) {
         $this->connection = $connection;
+        $this->logger = $logger;
     }
 
     public function saveComment(Comment $comment): void {
+        $this->logger->info('Save comment');
         $statement = $this->connection->prepare(
             "INSERT INTO comment (id, id_post, id_author, text) VALUES (:id,:id_post,:id_author, :text)"
         );
@@ -25,12 +29,14 @@ class SqliteCommentsRepository implements CommentsRepositoryInterface {
             ':id_author'=>$comment->getUuidUser(),
             ':text'=>$comment->getTextComment()]
         );
+        $this->logger->info("Save comment: $comment");
     }
 
     private function getComment(PDOStatement $statement, string $value): Comments {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if($result===false) {
+            $this->logger->warning("Cannot get comment: $value");
             throw new CommentNotFoundException("Cannot get comment: $value");
         }
 

@@ -10,6 +10,7 @@ use Tgu\Laperdina\Blog\Comment;
 use Tgu\Laperdina\Blog\Repositories\CommentsRepository\SqliteCommentsRepository;
 use Tgu\Laperdina\Blog\UUID;
 use Tgu\Laperdina\Exceptions\CommentNotFoundException;
+use Tgu\Laperdina\PhpUnit\Blog\DummyLogger;
 
 class SqliteCommentsRepositoryTest extends TestCase {
     public function testItTrowsAnExceptionWhenCommentNotFound(): void {
@@ -43,7 +44,7 @@ class SqliteCommentsRepositoryTest extends TestCase {
             ]);
         $connectionStub->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqliteCommentsRepository($connectionStub);
+        $repository = new SqliteCommentsRepository($connectionStub, new DummyLogger());
 
         $repository->saveComment( new Comment(
             new UUID('f165d492-bffe-448f-a499-b72d16a40f1b'),
@@ -61,7 +62,7 @@ class SqliteCommentsRepositoryTest extends TestCase {
 
         $connectionStub->method('prepare')->willReturn($statementStub);
 
-        $repository = new SqliteCommentsRepository($connectionStub);
+        $repository = new SqliteCommentsRepository($connectionStub, new DummyLogger());
 
         $this->expectException(CommentNotFoundException::class);
         $this->expectExceptionMessage('Cannot get comment:f165d492-bffe-448f-a499-b72d16a40f1b');

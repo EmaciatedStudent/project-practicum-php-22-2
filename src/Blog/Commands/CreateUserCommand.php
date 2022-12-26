@@ -8,6 +8,7 @@ use Tgu\Laperdina\Blog\UUID;
 use Tgu\Laperdina\Exceptions\CommandException;
 use Tgu\Laperdina\Exceptions\UserNotFoundException;
 use Tgu\Laperdina\Person\Name;
+use Psr\Log\LoggerInterface;
 
 class CreateUserCommand
 {
@@ -20,14 +21,19 @@ class CreateUserCommand
 
     public function handle(Arguments $arguments):void{
         $username = $arguments->get('username');
+        $this->logger->info('Create command started');
+
         if($this->userExist($username)){
-            throw new CommandException("User already exists: $username");
+            $this->logger->warning("User already exists: $username");
         }
+
         $this->usersRepository->save(new User(
             UUID::random(),
             new Name($arguments->get('first_name'), $arguments->get('last_name')),
-            $username));
+            $username
+        ));
     }
+
     public function userExist(string $username):bool{
         try{
             $this->usersRepository->getByUsername($username);

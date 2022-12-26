@@ -7,16 +7,20 @@ use PDOStatement;
 use Tgu\Laperdina\Blog\Post;
 use Tgu\Laperdina\Blog\UUID;
 use Tgu\Laperdina\Exceptions\PostNotFoundException;
+use Psr\Log\LoggerInterface;
 
 class SqlitePostsRepository implements PostsRepositoryInterface
 {
     private PDO $connection;
+    private LoggerInterface $logger;
 
-    public function __construct($connection) {
+    public function __construct($connection, $logger) {
         $this->connection = $connection;
+        $this->logger = $logger;
     }
 
     public function savePost(Post $post): void {
+        $this->logger->info('Save post');
         $statement = $this->connection->prepare(
             "INSERT INTO post (uuid_post, uuid_author, title, text) VALUES (:uuid_post,    :uuid_author,:title, :text)"
         );
@@ -26,12 +30,14 @@ class SqlitePostsRepository implements PostsRepositoryInterface
             ':title'=>$post->getTitle(),
             ':text'=>$post->getTextPost()]
         );
+        $this->logger->info("Save post: $post" );
     }
 
     private function getPost(PDOStatement $statement, string $value): Post {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if($result===false){
+            $this->logger->warning("Cannot get post: $value");
             throw new PostNotFoundException("Cannot get post: $value");
         }
 

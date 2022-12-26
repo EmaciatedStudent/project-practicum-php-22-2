@@ -8,15 +8,19 @@ use Tgu\Laperdina\Exceptions\UserNotFoundException;
 use Tgu\Laperdina\Person\Name;
 use PDO;
 use PDOStatement;
+use Psr\Log\LoggerInterface;
 
 class SqliteUsersRepository {
     private PDO $connection;
+    private LoggerInterface $logger;
 
-    public function __construct($connection) {
+    public function __construct($connection, $logger) {
         $this->connection = $connection;
+        $this->logger = $logger;
     }
 
     public function save (User $user): void {
+        $this->logger->info('Save user');
         $statement = $this->connection->prepare(
           "INSERT INTO users(uuid, first_name, last_name, user_name) VALUES (:uuid, :first_name, :last_name, :user_name)"
         );
@@ -26,12 +30,14 @@ class SqliteUsersRepository {
             ':last_name' => $user->getName()->getLastName(),
             ':user_name' => $user->getUsername(),
         ]);
+        $this->logger->info("Save user: $user" );
     }
 
     private function getUser(PDOStatement $statement, string $value): User {
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         if($result===false){
+            $this->logger->warning("Cannot get user: $value");
             throw new UserNotFoundException("Cannot get user: $value");
         }
 
